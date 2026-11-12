@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report a lost item — Knit</title>
+    <link rel="icon" type="image/x-icon" href="/webcon.ico">
+    <script>
+        try { var t = localStorage.getItem('lf-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="nav-wrapper">
+        <nav class="nav">
+            <div class="nav-inner container">
+                <a href="/" class="nav-brand">
+                    <span class="mark" data-brand></span>
+                    <span>Knit</span>
+                </a>
+                <button class="icon-btn nav-toggle" id="navToggle" aria-label="Toggle menu"><span data-icon="menu"></span></button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="report-found.html" class="nav-link">I Found an Item</a></li>
+                    <li><a href="report-lost.html" class="nav-link active">I Lost an Item</a></li>
+                    <li><a href="my-items.html" class="nav-link">My Items</a></li>
+                </ul>
+                <div class="nav-right">
+                    <a href="report-found.html" class="btn btn-primary nav-cta">Report found item</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container" style="padding-top: 100px; padding-bottom: var(--s12);">
+        <div class="card card-form">
+            <div class="card-header">
+                <h1>Report a lost item</h1>
+                <p>Something of yours has gone astray. A photo is all we need to start the search.</p>
+            </div>
+            <form id="reportForm" novalidate>
+                <div class="card-body">
+                    <div class="field">
+                        <label for="description">What did you lose?</label>
+                        <input type="text" id="description" placeholder="e.g. Red backpack, house keys" maxlength="120">
+                    </div>
+
+                    <div class="field">
+                        <label for="category">Category <span class="hint">— narrows the match</span></label>
+                        <select id="category">
+                            <option value="" selected disabled>Select a category…</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Pets">Pets</option>
+                            <option value="Keys">Keys</option>
+                            <option value="Documents">Documents</option>
+                            <option value="Bags & Luggage">Bags &amp; Luggage</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Photo of the item <span class="hint">— a clear photo improves matching</span></label>
+                        <div class="upload" id="dropArea" role="button" tabindex="0" aria-label="Upload photo">
+                            <div class="upload-empty" id="uploadEmpty">
+                                <span data-icon="upload"></span>
+                                <span class="strong">Click to upload or drag &amp; drop</span>
+                                <span>JPG · PNG · WEBP</span>
+                            </div>
+                            <div class="upload-preview" id="uploadPreview">
+                                <img id="previewImage" alt="Preview">
+                                <button type="button" class="close-btn" id="removeImage" aria-label="Remove image"><span data-icon="x-circle"></span></button>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+                        <div class="upload-tools">
+                            <button type="button" class="btn btn-sm btn-secondary" id="webcamBtn"><span data-icon="camera"></span> Use webcam</button>
+                            <button type="button" class="btn btn-sm btn-primary" id="captureBtn" hidden><span data-icon="check"></span> Capture</button>
+                            <video id="webcamFeed" hidden muted playsinline style="width:100%;border-radius:var(--r-sm);background:#000;max-height:280px;object-fit:contain;"></video>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Last known location</label>
+                        <div class="flex gap-2 items-center" style="flex-wrap:wrap;">
+                            <button type="button" class="btn btn-sm btn-secondary" id="locBtn"><span data-icon="map-pin"></span> Use my location</button>
+                            <span class="location-status" id="locStatus">Not captured yet.</span>
+                        </div>
+                        <input type="hidden" id="latitude" value="Not Provided">
+                        <input type="hidden" id="longitude" value="Not Provided">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="name">Your name</label>
+                            <input type="text" id="name" placeholder="John Smith">
+                        </div>
+                        <div class="field">
+                            <label for="phone">Phone</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" maxlength="10" style="flex: 1;">
+                                <button type="button" class="btn btn-secondary" id="sendOtpBtn">Send OTP</button>
+                            </div>
+                        </div>
+                        <div class="field" id="otpField" style="display: none;">
+                            <label for="otp">Enter OTP</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="otp" placeholder="6-digit OTP" maxlength="6" style="flex: 1;">
+                                <button type="button" class="btn btn-primary" id="verifyOtpBtn">Verify</button>
+                            </div>
+                            <span id="otpStatus" class="hint" style="margin-top: 4px;"></span>
+                        </div>
+                        <div class="field full">
+                            <label for="contact_email">Email</label>
+                            <input type="email" id="contact_email" placeholder="you@example.com">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitBtn">
+                        <span data-icon="search"></span> Search for matches
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        var form = document.getElementById('reportForm');
+        var fileInput = document.getElementById('fileInput');
+        var dropArea = document.getElementById('dropArea');
+        var uploadEmpty = document.getElementById('uploadEmpty');
+        var uploadPreview = document.getElementById('uploadPreview');
+        var previewImage = document.getElementById('previewImage');
+        var removeImage = document.getElementById('removeImage');
+        var webcamBtn = document.getElementById('webcamBtn');
+        var captureBtn = document.getElementById('captureBtn');
+        var webcamFeed = document.getElementById('webcamFeed');
+        var submitBtn = document.getElementById('submitBtn');
+
+        var capturedBlob = null, mediaStream = null, pickedFile = null;
+
+        function setPreview(dataUrl) {
+            previewImage.src = dataUrl;
+            uploadEmpty.style.display = 'none';
+            uploadPreview.style.display = 'block';
+        }
+        function clearImage() {
+            fileInput.value = ''; pickedFile = null; capturedBlob = null;
+            previewImage.src = '';
+            uploadEmpty.style.display = ''; uploadPreview.style.display = 'none';
+        }
+
+        dropArea.addEventListener('click', function () { fileInput.click(); });
+        dropArea.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+        dropArea.addEventListener('dragover', function (e) { e.preventDefault(); dropArea.style.borderColor = 'var(--brand)'; });
+        dropArea.addEventListener('dragleave', function () { dropArea.style.borderColor = ''; });
+        dropArea.addEventListener('drop', function (e) {
+            e.preventDefault(); dropArea.style.borderColor = '';
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', function () { if (fileInput.files.length) handleFile(fileInput.files[0]); });
+        removeImage.addEventListener('click', function () { stopWebcam(); clearImage(); });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); return; }
+            if (file.size > 12 * 1024 * 1024) { alert('Image is too large (max 12 MB).'); return; }
+            stopWebcam();
+            pickedFile = file; capturedBlob = null;
+            var reader = new FileReader();
+            reader.onload = function (e) { setPreview(e.target.result); };
+            reader.readAsDataURL(file);
+        }
+
+        function stopWebcam() {
+            if (mediaStream) { mediaStream.getTracks().forEach(function (t) { t.stop(); }); mediaStream = null; }
+            webcamFeed.hidden = true; captureBtn.hidden = true;
+            webcamBtn.firstChild.textContent = ' Use webcam';
+        }
+
+        webcamBtn.addEventListener('click', async function () {
+            if (mediaStream) { stopWebcam(); return; }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert('Webcam not supported.'); return; }
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                webcamFeed.srcObject = mediaStream; webcamFeed.hidden = false; captureBtn.hidden = false;
+                webcamBtn.firstChild.textContent = ' Stop webcam';
+                clearImage();
+                await webcamFeed.play();
+            } catch (err) { alert('Could not access the webcam: ' + err.message); }
+        });
+
+        captureBtn.addEventListener('click', function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = webcamFeed.videoWidth || 640; canvas.height = webcamFeed.videoHeight || 480;
+            canvas.getContext('2d').drawImage(webcamFeed, 0, 0, canvas.width, canvas.height);
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            setPreview(dataUrl);
+            capturedBlob = dataUrlToBlob(dataUrl); pickedFile = null;
+            stopWebcam();
+        });
+
+        function dataUrlToBlob(dataUrl) {
+            var parts = dataUrl.split(','), mime = parts[0].match(/:(.*?);/)[1];
+            var bin = atob(parts[1]), arr = new Uint8Array(bin.length);
+            for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            return new Blob([arr], { type: mime });
+        }
+
+        var locBtn = document.getElementById('locBtn');
+        var locStatus = document.getElementById('locStatus');
+        var latInput = document.getElementById('latitude');
+        var lngInput = document.getElementById('longitude');
+        locBtn.addEventListener('click', function () {
+            if (!('geolocation' in navigator)) { locStatus.textContent = 'Not supported here.'; locStatus.className = 'location-status err'; return; }
+            locStatus.textContent = 'Locating…'; locStatus.className = 'location-status';
+            navigator.geolocation.getCurrentPosition(function (pos) {
+                latInput.value = pos.coords.latitude; lngInput.value = pos.coords.longitude;
+                locStatus.textContent = '(' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4) + ')';
+                locStatus.className = 'location-status ok';
+            }, function () {
+                locStatus.textContent = 'Could not get location. You can submit without it.';
+                locStatus.className = 'location-status err';
+            }, { enableHighAccuracy: true, timeout: 8000 });
+        });
+
+        function setInvalid(el, inv) { if (inv) el.classList.add('invalid'); else el.classList.remove('invalid'); }
+        function validEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+        // --- OTP Validation Logic ---
+        var sendOtpBtn = document.getElementById('sendOtpBtn');
+        var verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        var otpField = document.getElementById('otpField');
+        var phoneInput = document.getElementById('phone');
+        var otpInput = document.getElementById('otp');
+        var otpStatus = document.getElementById('otpStatus');
+        var isPhoneVerified = false;
+        var countdownInterval = null;
+
+        function startOtpCountdown() {
+            var timeLeft = 60;
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.textContent = "Resend OTP in " + timeLeft + "s";
+            
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            countdownInterval = setInterval(function() {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.textContent = "Resend OTP";
+                } else {
+                    sendOtpBtn.textContent = "Resend OTP in " + timeLeft + "s";
+                }
+            }, 1000);
+        }
+
+        sendOtpBtn.addEventListener('click', async function() {
+            var phone = phoneInput.value.trim();
+            if (!/^\d{10}$/.test(phone)) {
+                alert("Please enter a valid 10-digit mobile number.");
+                return;
+            }
+            
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.textContent = "Sending...";
+            
+            try {
+                let res = await fetch('/api/send-otp?phone=' + phone, { method: 'POST' });
+                if(res.ok) {
+                    let data = await res.json();
+                    if(data.dev_otp) alert("DEVELOPMENT MODE - Your OTP is: " + data.dev_otp);
+                    
+                    otpField.style.display = 'block';
+                    startOtpCountdown();
+                    otpStatus.textContent = "OTP sent!";
+                    otpStatus.style.color = "var(--success)";
+                } else {
+                    throw new Error("Failed to send OTP");
+                }
+            } catch (e) {
+                alert(e.message);
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.textContent = "Send OTP";
+            }
+        });
+
+        verifyOtpBtn.addEventListener('click', async function() {
+            var phone = phoneInput.value.trim();
+            var otp = otpInput.value.trim();
+            
+            if(!otp) {
+                alert("Please enter the OTP.");
+                return;
+            }
+
+            try {
+                let res = await fetch(`/api/verify-otp?phone=${phone}&otp=${otp}`, { method: 'POST' });
+                if(res.ok) {
+                    isPhoneVerified = true;
+                    otpStatus.textContent = "Number verified successfully!";
+                    otpStatus.style.color = "var(--success)";
+                    verifyOtpBtn.disabled = true;
+                    verifyOtpBtn.textContent = "Verified";
+                    phoneInput.readOnly = true;
+                    otpInput.readOnly = true;
+                    
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    sendOtpBtn.disabled = true;
+                    sendOtpBtn.textContent = "Verified";
+                } else {
+                    otpStatus.textContent = "Invalid OTP. Try again.";
+                    otpStatus.style.color = "var(--danger)";
+                }
+            } catch (e) {
+                alert("Error verifying OTP.");
+            }
+        });
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            var name = document.getElementById('name').value.trim();
+            var email = document.getElementById('contact_email').value.trim();
+            var phone = document.getElementById('phone').value.trim();
+            var desc = document.getElementById('description').value.trim();
+            var cat = document.getElementById('category').value;
+
+            var ok = true;
+            setInvalid(document.getElementById('description'), !desc);
+            setInvalid(document.getElementById('category'), !cat);
+            setInvalid(document.getElementById('name'), !name);
+            setInvalid(document.getElementById('contact_email'), !email || !validEmail(email));
+            setInvalid(document.getElementById('phone'), !phone);
+            if (!desc || !cat || !name || !email || !validEmail(email) || !phone) ok = false;
+
+            if (!(pickedFile || capturedBlob)) {
+                dropArea.style.borderColor = 'var(--danger)'; dropArea.style.borderStyle = 'solid';
+                alert('Please add a photo of the item.'); return;
+            }
+            if (!ok) { alert('Please fill in all required fields.'); return; }
+            
+            if (!isPhoneVerified) {
+                alert('Please verify your phone number with OTP first.'); 
+                return;
+            }
+
+            var fd = new FormData();
+            fd.append('image', capturedBlob ? new File([capturedBlob], 'webcam.jpg', { type: 'image/jpeg' }) : pickedFile);
+            fd.append('item_name', desc);
+            fd.append('category', cat);
+            fd.append('user_name', name);
+            fd.append('user_contact_email', email);
+            fd.append('user_phone', phone);
+            fd.append('latitude', latInput.value);
+            fd.append('longitude', lngInput.value);
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Analyzing & matching…';
+            try {
+                var res = await fetch('/api/report-lost', { method: 'POST', body: fd });
+                if (!res.ok) { var err = await res.json(); throw new Error(err.detail || 'Could not report the item.'); }
+                var result = await res.json();
+                sessionStorage.setItem('reportDetails', JSON.stringify(result));
+                window.location.href = 'matches.html';
+            } catch (err) {
+                var msg = (err && err.name === 'TypeError' && err.message === 'Failed to fetch')
+                    ? 'Could not reach the server. Check that the app is running (uvicorn main:app on port 8000) and try again.'
+                    : (err.message || 'Something went wrong.');
+                alert(msg);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span data-icon="search"></span> Search for matches';
+            }
+        });
+    </script>
+</body>
+</html>

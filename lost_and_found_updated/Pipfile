@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+sentence-transformers = "*"
+qdrant-client = "*"
+fastapi-mail = ">=1.4.5"
+pydantic = "*"
+python-multipart = "*"
+jinja2 = "*"
+pillow = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match results — Knit</title>
+    <link rel="icon" type="image/x-icon" href="/webcon.ico">
+    <script>
+        try { var t = localStorage.getItem('lf-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="nav-wrapper">
+        <nav class="nav">
+            <div class="nav-inner container">
+                <a href="/" class="nav-brand"><span class="mark" data-brand></span><span>Knit</span></a>
+                <button class="icon-btn nav-toggle" id="navToggle" aria-label="Toggle menu"><span data-icon="menu"></span></button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="report-found.html" class="nav-link">I Found an Item</a></li>
+                    <li><a href="report-lost.html" class="nav-link">I Lost an Item</a></li>
+                    <li><a href="my-items.html" class="nav-link">My Items</a></li>
+                </ul>
+                <div class="nav-right">
+                    <a href="report-found.html" class="btn btn-primary nav-cta">Report an item</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container" style="padding-top: 100px; padding-bottom: var(--s12); max-width: 920px;">
+        <div style="margin-bottom:var(--s6);">
+            <a href="/" class="btn btn-sm btn-secondary"><span data-icon="arrow-left"></span> Back to home</a>
+        </div>
+
+        <div id="loading" class="card" style="padding:var(--s12);text-align:center;color:var(--text-3);"><p class="ph" style="height:var(--s6);margin:0;border-radius:var(--r-sm);"></p></div>
+
+        <div id="errorBox" class="card" style="padding:var(--s10);text-align:center;display:none;">
+            <span data-icon="alert-circle" style="display:block;margin:0 auto var(--s4);color:var(--danger);"></span>
+            <h2 style="font-size:1.2rem;">No results to show</h2>
+            <p class="muted" style="max-width:400px;margin:0 auto var(--s5);">We couldn't find match data for this session. Please report an item again to get your matches.</p>
+            <a href="/" class="btn btn-primary">Go to homepage</a>
+        </div>
+
+        <div id="content" style="display:none;">
+            <div class="card mb-6">
+                <div class="card-header" style="padding:var(--s5) var(--s6);border-bottom:1px solid var(--border);">
+                    <h1 style="font-size:1.15rem;font-weight:600;margin-bottom:2px;">Your report</h1>
+                    <p class="muted mb-0" style="font-size:0.86rem;">How your item compares against everything reported.</p>
+                </div>
+                <div style="padding:var(--s5) var(--s6);display:flex;gap:var(--s5);align-items:center;flex-wrap:wrap;">
+                    <div style="width:84px;height:84px;border-radius:var(--r-sm);overflow:hidden;flex-shrink:0;background:var(--surface-2);display:grid;place-items:center;color:var(--text-3);">
+                        <img id="reportedImg" alt="Reported item" style="width:100%;height:100%;object-fit:cover;display:none;">
+                        <span id="reportedImgIc" data-icon="image"></span>
+                    </div>
+                    <div style="flex:1;min-width:220px;">
+                        <h2 id="reportedName" style="font-size:1.1rem;font-weight:600;margin:0 0 4px;text-transform:capitalize;">—</h2>
+                        <p class="muted mb-0" style="font-size:0.86rem;"><span id="reportedCat"></span> · <span id="reportedType"></span> · reported <span id="reportedDate"></span></p>
+                    </div>
+                    <a id="reportedLink" href="#" class="btn btn-sm btn-secondary"><span data-icon="external-link"></span> View details</a>
+                </div>
+            </div>
+
+            <div style="margin-bottom:var(--s5);">
+                <h2 style="font-size:1.1rem;font-weight:650;margin-bottom:2px;">Potential matches</h2>
+                <p class="muted mb-0" style="font-size:0.86rem;">Ranked by how closely the photo and description align with your report.</p>
+            </div>
+
+            <div id="matchesGrid" class="grid grid-2"></div>
+
+            <div id="noMatches" class="alert alert-empty" style="display:none;">
+                <span data-icon="search"></span>
+                <div><strong>No high-confidence matches yet.</strong><br><span class="muted">New items are reported all the time — check back later.</span></div>
+            </div>
+
+            <div id="alreadyClaimed" class="alert alert-info" style="display:none;">
+                <span data-icon="check-circle"></span>
+                <div><strong>This item is already claimed.</strong><br><span class="muted">You can view it, but no further claims can be made.</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        var FOUND = 'found_items_collection';
+        var LOST = 'lost_items_collection';
+
+        // --- UPDATED FOR 90% THRESHOLD REQUIREMENT ---
+        function conf(score) { 
+            if (score >= 0.90) return { l: 'Strong', c: 'score-high' }; 
+            return { l: 'Good', c: 'score-good' }; 
+        }
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function claimItem(matchedItemId, matchedCollection) {
+            var report = JSON.parse(sessionStorage.getItem('reportDetails'));
+            if (!confirm('Claim this item? Both parties will be notified by email with each other\u2019s contact details.')) return;
+            fetch('/api/claim-item', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reporting_item_id: report.reported_item_id, reporting_item_collection: report.reported_item_collection, matched_item_id: matchedItemId, matched_item_collection: matchedCollection })
+            }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+              .then(function (res) { if (!res.ok) throw new Error(res.d.detail || 'Could not claim the item.'); window.location.href = 'claimed.html'; })
+              .catch(function (err) { alert('Claim failed: ' + err.message); });
+        }
+
+        function dismiss(btn) {
+            var card = btn.closest('[data-match]');
+            if (card) { card.style.transition = 'opacity .2s ease'; card.style.opacity = '0'; setTimeout(function () { card.remove(); }, 200); }
+        }
+
+        function matchCard(match) {
+            var c = conf(match.score);
+            var pct = Math.round(match.score * 100);
+            var vis = typeof match.visual_score === 'number' ? match.visual_score : match.score;
+            var txt = typeof match.text_score === 'number' ? match.text_score : match.score;
+            var visPct = Math.round(vis * 100);
+            var txtPct = Math.round(txt * 100);
+            var matchCollection = match.finder_name ? FOUND : LOST;
+            var report = JSON.parse(sessionStorage.getItem('reportDetails'));
+            var itemClaimed = report.reported_item_payload.status !== 'available';
+            var matchClaimed = match.status !== 'available';
+
+            var thumb = match.image_url
+                ? '<img src="' + esc(match.image_url) + '" alt="' + esc(match.item_name || 'item') + '">'
+                : '<div class="ph" style="position:absolute;inset:0;height:100%;" data-icon="image"></div>';
+
+            var action;
+            if (matchClaimed) action = '<span class="status status-claimed" style="justify-content:center;"><span class="dot"></span> Already claimed</span>';
+            else if (itemClaimed) action = '<span class="status status-claimed" style="justify-content:center;"><span class="dot"></span> Your item claimed</span>';
+            else action = '<button class="btn btn-primary btn-sm btn-block" onclick="claimItem(\'' + esc(match.item_id) + '\',\'' + matchCollection + '\')"><span data-icon="check"></span> Claim this match</button>';
+
+            return '' +
+                '<article class="card item-card rise" data-match>' +
+                    '<div class="item-thumb" style="position:relative;">' + thumb +
+                        '<span class="tag" style="position:absolute;top:10px;left:10px;">' + esc(match.finder_name ? 'Found item' : 'Lost item') + '</span>' +
+                    '</div>' +
+                    '<div class="item-body">' +
+                        '<h3 class="item-title" style="text-transform:capitalize;">' + esc(match.item_name || 'Unnamed item') + '</h3>' +
+                        '<div class="item-sub"><span class="tag">' + esc(match.category || 'Other') + '</span><span>' + esc(match.upload_time || '') + '</span></div>' +
+                        '<div class="score-block">' +
+                            '<div class="match-head">' +
+                                '<span class="match-quality">' + pct + '%<small>' + c.l + '</small></span>' +
+                                '<span class="score-label" style="margin:0;"><span>Combined confidence</span></span>' +
+                            '</div>' +
+                            '<div class="score-track"><div class="score-fill ' + c.c + '" data-w="' + pct + '" style="width:0"></div></div>' +
+                            '<div class="subscores">' +
+                                '<div class="subscore">' +
+                                    '<div class="score-label"><span><span data-icon="image"></span>Visual</span><b>' + visPct + '%</b></div>' +
+                                    '<div class="score-track"><div class="score-fill" data-w="' + visPct + '" style="width:0"></div></div>' +
+                                '</div>' +
+                                '<div class="subscore">' +
+                                    '<div class="score-label"><span><span data-icon="box"></span>Description</span><b>' + txtPct + '%</b></div>' +
+                                    '<div class="score-track"><div class="score-fill" data-w="' + txtPct + '" style="width:0"></div></div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="item-foot" style="border-top:0;padding-top:var(--s2);margin-top:var(--s2);flex-wrap:wrap;">' +
+                            action +
+                            '<a class="btn btn-sm btn-secondary" href="item.html?id=' + match.item_id + '&collection=' + matchCollection + '" target="_blank" rel="noopener"><span data-icon="external-link"></span> Details</a>' +
+                        '</div>' +
+                        (action.indexOf('button') !== -1
+                            ? '<button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--text-3);margin-top:4px;" onclick="dismiss(this)">Not a match</button>'
+                            : '') +
+                    '</div>' +
+                '</article>';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var raw = sessionStorage.getItem('reportDetails');
+            if (!raw) { document.getElementById('loading').style.display = 'none'; document.getElementById('errorBox').style.display = 'block'; return; }
+            var report;
+            try { report = JSON.parse(raw); } catch (e) { document.getElementById('errorBox').style.display = 'block'; return; }
+            var item = report.reported_item_payload;
+            var matches = report.potential_matches || [];
+
+            if (item.image_url) {
+                var ri = document.getElementById('reportedImg');
+                ri.src = item.image_url; ri.style.display = 'block';
+                document.getElementById('reportedImgIc').style.display = 'none';
+            }
+            document.getElementById('reportedName').textContent = item.item_name || 'Unnamed item';
+            document.getElementById('reportedCat').textContent = item.category || 'Other';
+            document.getElementById('reportedType').textContent = report.reported_item_collection === FOUND ? 'found item' : 'lost item';
+            document.getElementById('reportedDate').textContent = item.upload_time || '';
+            document.getElementById('reportedLink').href = 'item.html?id=' + report.reported_item_id + '&collection=' + report.reported_item_collection;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+            if (item.status !== 'available') document.getElementById('alreadyClaimed').style.display = 'flex';
+
+            if (matches.length) {
+                document.getElementById('matchesGrid').innerHTML = matches.map(matchCard).join('');
+                setTimeout(function () {
+                    document.querySelectorAll('.score-fill').forEach(function (el, i) {
+                        setTimeout(function () { el.style.width = el.getAttribute('data-w') + '%'; }, i * 100);
+                    });
+                }, 100);
+            } else {
+                document.getElementById('noMatches').style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>

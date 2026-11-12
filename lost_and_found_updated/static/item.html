@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item details — Knit</title>
+    <link rel="icon" type="image/x-icon" href="/webcon.ico">
+    <script>
+        try { var t = localStorage.getItem('lf-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="nav-wrapper">
+        <nav class="nav">
+            <div class="nav-inner container">
+                <a href="/" class="nav-brand"><span class="mark" data-brand></span><span>Knit</span></a>
+                <button class="icon-btn nav-toggle" id="navToggle" aria-label="Toggle menu"><span data-icon="menu"></span></button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="report-found.html" class="nav-link">I Found an Item</a></li>
+                    <li><a href="report-lost.html" class="nav-link">I Lost an Item</a></li>
+                    <li><a href="my-items.html" class="nav-link">My Items</a></li>
+                </ul>
+                <div class="nav-right">
+                    <a href="report-found.html" class="btn btn-primary nav-cta">Report an item</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container" style="padding-top: 100px; padding-bottom: var(--s12); max-width: 920px;">
+        <div style="margin-bottom:var(--s6);">
+            <a href="/" class="btn btn-sm btn-secondary"><span data-icon="arrow-left"></span> Back to home</a>
+        </div>
+
+        <div id="loading" class="card" style="padding:var(--s12);text-align:center;"><p class="ph" style="height:var(--s8);margin:0;border-radius:var(--r-sm);"></p></div>
+
+        <div id="errorBox" class="card" style="padding:var(--s10);text-align:center;display:none;">
+            <span data-icon="alert-circle" style="display:block;margin:0 auto var(--s4);color:var(--danger);"></span>
+            <h2 style="font-size:1.2rem;">Could not load this item</h2>
+            <p class="muted" style="max-width:380px;margin:0 auto var(--s5);">It may have been removed, or the link is incorrect.</p>
+            <a href="/" class="btn btn-primary">Back to homepage</a>
+        </div>
+
+        <div id="content" class="detail-card" style="display:none;">
+            <div class="detail-hero">
+                <div class="detail-image">
+                    <img id="detailImg" alt="Item image" style="display:none;">
+                    <span id="detailImgIc" data-icon="image"></span>
+                </div>
+                <div class="detail-content">
+                    <div class="detail-overline">
+                        <span class="tag" id="detailCat"></span>
+                        <span class="status status-available" id="detailStatus"><span class="dot"></span></span>
+                    </div>
+                    <h1 class="detail-title" id="detailName">—</h1>
+
+                    <div class="detail-facts">
+                        <div class="fact"><div class="fact-label">Type</div><div class="fact-value" id="detailType"></div></div>
+                        <div class="fact"><div class="fact-label">Reported on</div><div class="fact-value" id="detailDate"></div></div>
+                        <div class="fact"><div class="fact-label">Location</div><div class="fact-value"><span id="detailLoc"></span> <a id="detailMap" href="#" target="_blank" rel="noopener">View on map</a></div></div>
+                        <div class="fact"><div class="fact-label">Reported by</div><div class="fact-value" id="detailReporter"></div></div>
+                        <div class="fact"><div class="fact-label">Phone</div><div class="fact-value" id="detailPhone"></div></div>
+                        <div class="fact"><div class="fact-label">Contact email</div><div class="fact-value" id="detailEmail"></div></div>
+                    </div>
+
+                    <div id="claimBanner" class="status-banner claimed" style="display:none;">
+                        <span data-icon="check-circle"></span>
+                        <p><strong>This item has been claimed.</strong> It was matched with <a id="matchLink" href="#">this item</a>. Contact them to coordinate the return.</p>
+                    </div>
+                    <div id="returnedBanner" class="status-banner returned" style="display:none;">
+                        <span data-icon="check"></span>
+                        <p><strong>Returned.</strong> This item and its match were successfully handed back.<br><span class="muted">The journey is complete.</span></p>
+                    </div>
+
+                    <button class="btn btn-success btn-lg btn-block" id="returnBtn" style="display:none;">
+                        <span data-icon="check"></span> Mark as returned
+                    </button>
+
+                    <button class="btn btn-primary btn-lg btn-block" id="findMatchesBtn" style="display:none;">
+                        <span data-icon="search"></span> Find potential matches
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        var FOUND = 'found_items_collection';
+        var LOST = 'lost_items_collection';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var params = new URLSearchParams(window.location.search);
+            var id = params.get('id');
+            var collection = params.get('collection');
+
+            var loading = document.getElementById('loading');
+            var errorBox = document.getElementById('errorBox');
+            var content = document.getElementById('content');
+
+            if (!id || !collection) { loading.style.display = 'none'; errorBox.style.display = 'block'; return; }
+
+            fetch('/api/item-details/' + collection + '/' + id)
+                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                .then(render)
+                .catch(function () {
+                    loading.style.display = 'none'; errorBox.style.display = 'block';
+                    document.title = 'Item not found — Knit';
+                });
+
+            function render(item) {
+                loading.style.display = 'none';
+                content.style.display = 'block';
+                document.title = (item.item_name || 'Item') + ' — Knit';
+
+                var isFound = !!item.finder_name;
+
+                if (item.image_url) {
+                    document.getElementById('detailImg').src = item.image_url;
+                    document.getElementById('detailImg').style.display = 'block';
+                    document.getElementById('detailImgIc').style.display = 'none';
+                }
+                document.getElementById('detailName').textContent = item.item_name || 'Unnamed item';
+                document.getElementById('detailCat').textContent = item.category || 'Other';
+                document.getElementById('detailDate').textContent = item.upload_time || '—';
+                document.getElementById('detailType').textContent = isFound ? 'Found item' : 'Lost item';
+                document.getElementById('detailReporter').textContent = isFound ? item.finder_name : item.loser_name;
+                document.getElementById('detailPhone').textContent = (isFound ? item.finder_phone : item.loser_phone) || '—';
+                document.getElementById('detailEmail').textContent = isFound ? item.finder_contact_email : item.loser_contact_email;
+
+                var st = document.getElementById('detailStatus');
+                st.textContent = (item.status || 'available') + ' ';
+                st.className = 'status status-' + (item.status === 'available' ? 'available' : item.status);
+                st.insertAdjacentHTML('beforeend', '<span class="dot"></span>');
+
+                var locEl = document.getElementById('detailLoc');
+                var mapEl = document.getElementById('detailMap');
+                if (item.latitude && item.latitude !== 'Not Provided' && item.longitude && item.longitude !== 'Not Provided') {
+                    locEl.textContent = '(' + parseFloat(item.latitude).toFixed(4) + ', ' + parseFloat(item.longitude).toFixed(4) + ') ';
+                    mapEl.href = 'https://www.google.com/maps/search/?api=1&query=' + item.latitude + ',' + item.longitude;
+                    mapEl.style.display = '';
+                } else {
+                    locEl.textContent = 'Not provided ';
+                    mapEl.style.display = 'none';
+                }
+
+                var claimBanner = document.getElementById('claimBanner');
+                var returnedBanner = document.getElementById('returnedBanner');
+                var returnBtn = document.getElementById('returnBtn');
+                var findBtn = document.getElementById('findMatchesBtn');
+
+                if (item.status === 'claimed') {
+                    claimBanner.style.display = 'flex';
+                    var link = document.getElementById('matchLink');
+                    if (item.matched_with_id && item.matched_with_name) {
+                        link.href = 'item.html?id=' + item.matched_with_id + '&collection=' + (collection === FOUND ? LOST : FOUND);
+                        link.textContent = item.matched_with_name;
+                    } else { link.href = '#'; link.textContent = 'another item'; }
+                    returnBtn.style.display = 'inline-flex';
+                    returnBtn.onclick = markReturned;
+                } else if (item.status === 'returned') {
+                    returnedBanner.style.display = 'flex';
+                } else {
+                    findBtn.style.display = 'inline-flex';
+                    findBtn.onclick = function () { findMatches(item, collection); };
+                }
+            }
+
+            function findMatches(item, collectionName) {
+                fetch('/api/get-potential-matches', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ item_id: item.item_id, collection_name: collectionName })
+                }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+                  .then(function (result) { sessionStorage.setItem('reportDetails', JSON.stringify(result)); window.location.href = 'matches.html'; })
+                  .catch(function () { alert('Could not load matches. Please try again.'); });
+            }
+
+            function markReturned() {
+                if (!confirm('Has the item been safely returned? This will also mark its matched item as returned.')) return;
+                var btn = document.getElementById('returnBtn');
+                btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Updating…';
+                fetch('/api/mark-as-returned/' + collection + '/' + id, { method: 'POST' })
+                    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+                    .then(function (res) { if (!res.ok) throw new Error(res.d.detail || 'Update failed'); location.reload(); })
+                    .catch(function (err) {
+                        alert('Could not mark as returned: ' + err.message);
+                        btn.disabled = false; btn.innerHTML = '<span data-icon="check"></span> Mark as returned';
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

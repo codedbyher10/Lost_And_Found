@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Runtime data — never commit
+qdrant_storage/
+uploaded_images/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Env & secrets
+.env
+*.local

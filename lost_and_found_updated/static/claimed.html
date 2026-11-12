@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match confirmed — Knit</title>
+    <link rel="icon" type="image/x-icon" href="/webcon.ico">
+    <script>
+        try { var t = localStorage.getItem('lf-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body style="min-height:100vh;display:flex;align-items:center;background:var(--bg);overflow-x:hidden;">
+
+    <div class="container-narrow" style="position:relative;padding-top:var(--s12);padding-bottom:var(--s12);">
+
+        <div style="position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,0.28) 0%,rgba(124,58,237,0.10) 45%,transparent 70%);filter:blur(40px);pointer-events:none;z-index:-1;"></div>
+
+        <div class="card" style="padding:var(--s12) var(--s8);text-align:center;border-color:var(--brand-border);box-shadow:var(--shadow),0 0 60px rgba(168,85,247,0.12);">
+
+            <div style="width:76px;height:76px;margin:0 auto var(--s6);border-radius:50%;display:grid;place-items:center;background:var(--brand-soft);border:1px solid var(--brand-border);color:var(--brand-light);box-shadow:0 0 36px rgba(168,85,247,0.3);">
+                <span data-icon="check-circle"></span>
+            </div>
+
+            <h1 style="font-size:2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:var(--s2);background:linear-gradient(135deg,#fff 20%,var(--brand-light) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;">
+                It&rsquo;s a match.
+            </h1>
+            <p class="muted" style="max-width:460px;margin:0 auto var(--s6);font-size:1rem;">
+                Both parties have been notified by email with each other&rsquo;s contact details.
+                The item is on its way home.
+            </p>
+
+            <div class="card" style="display:flex;align-items:center;gap:var(--s4);justify-content:center;padding:var(--s4) var(--s6);margin-bottom:var(--s9);border-color:var(--brand-border);background:var(--brand-soft);max-width:520px;margin-left:auto;margin-right:auto;text-align:left;">
+                <span class="status" style="flex-shrink:0;color:var(--brand-light);background:rgba(168,85,247,0.16);border-color:var(--brand-border);"><span class="dot"></span> Match confirmed</span>
+                <span style="font-size:0.85rem;color:var(--text-2);">
+                    Emails sent to <strong style="color:var(--text);">both sides</strong> &mdash; no more manual chasing.
+                </span>
+            </div>
+
+            <div class="steps" style="text-align:left;max-width:520px;margin:0 auto var(--s9);">
+                <div class="step">
+                    <div class="step-num"><span data-icon="mail"></span></div>
+                    <div>
+                        <h3>Check your inbox</h3>
+                        <p>We&rsquo;ve emailed both parties each other&rsquo;s contact details. If you don&rsquo;t see it, take a quick look in spam.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"><span data-icon="map-pin"></span></div>
+                    <div>
+                        <h3>Arrange the pickup</h3>
+                        <p>Reach out to the other person and agree on a safe, public place and a time that works for both of you.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"><span data-icon="check"></span></div>
+                    <div>
+                        <h3>Mark it returned</h3>
+                        <p>Once the item is back home, mark it as returned from its details page so the match stays tidy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:var(--s3);justify-content:center;flex-wrap:wrap;margin-bottom:var(--s6);">
+                <a href="my-items.html" class="btn btn-secondary"><span data-icon="box"></span> View my items</a>
+                <a href="/" class="btn btn-primary"><span data-icon="home"></span> Back to home</a>
+            </div>
+
+            <p style="display:inline-flex;align-items:center;gap:var(--s2);color:var(--text-3);font-size:0.78rem;margin:0;">
+                <span data-icon="shield"></span> Your contact details are only shared with the other party of this match.
+            </p>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof confetti === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                confetti({ particleCount: 90, spread: 75, origin: { y: 0.4 }, colors: ['#a855f7', '#c084fc', '#fbbf24'] });
+            }
+        });
+    </script>
+</body>
+</html>

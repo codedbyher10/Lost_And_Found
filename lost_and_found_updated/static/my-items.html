@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My items — Knit</title>
+    <link rel="icon" type="image/x-icon" href="/webcon.ico">
+    <script>
+        try { var t = localStorage.getItem('lf-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="nav-wrapper">
+        <nav class="nav">
+            <div class="nav-inner container">
+                <a href="/" class="nav-brand"><span class="mark" data-brand></span><span>Knit</span></a>
+                <button class="icon-btn nav-toggle" id="navToggle" aria-label="Toggle menu"><span data-icon="menu"></span></button>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="report-found.html" class="nav-link">I Found an Item</a></li>
+                    <li><a href="report-lost.html" class="nav-link">I Lost an Item</a></li>
+                    <li><a href="my-items.html" class="nav-link active">My Items</a></li>
+                </ul>
+                <div class="nav-right">
+                    <a href="report-found.html" class="btn btn-primary nav-cta">Report an item</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container-narrow" style="padding-top: 100px; padding-bottom: var(--s12);">
+        <div style="margin-bottom:var(--s8);">
+            <span class="kicker">My items</span>
+            <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:var(--s1);">Track your reports</h2>
+            <p class="muted mb-0" style="font-size:0.94rem;">Enter the email you used when reporting to see everything associated with it.</p>
+        </div>
+
+        <div class="card" style="padding:var(--s4);display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;margin-bottom:var(--s6);">
+            <input type="email" id="emailInput" placeholder="you@example.com" style="flex:1;min-width:220px;font-family:var(--font-body);font-size:0.94rem;color:var(--text);padding:var(--s2) var(--s3);border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--surface);outline:none;" onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='var(--border-strong)'">
+            <button class="btn btn-primary" id="lookupBtn"><span data-icon="search"></span> Look up my items</button>
+        </div>
+
+        <div id="state">
+            <div class="alert alert-empty" id="prompt" style="display:flex;">
+                <span data-icon="info"></span>
+                <div>Your reported items will appear here. You can view their matches or mark them as returned.</div>
+            </div>
+        </div>
+        <div id="results" style="display:none;">
+            <h3 style="font-size:1rem;font-weight:600;margin-bottom:var(--s4);">Items reported under <span id="usedEmail" style="color:var(--brand);"></span></h3>
+            <div id="list" class="list"></div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        var FOUND = 'found_items_collection';
+        var LOST = 'lost_items_collection';
+        var emailInput = document.getElementById('emailInput');
+        var lookupBtn = document.getElementById('lookupBtn');
+        var stateEl = document.getElementById('state');
+        var resultsEl = document.getElementById('results');
+        var listEl = document.getElementById('list');
+        var usedEmail = document.getElementById('usedEmail');
+
+        var saved = null;
+        try { saved = localStorage.getItem('lf_email'); } catch (e) {}
+        if (saved) emailInput.value = saved;
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function statusEl(status) {
+            return '<span class="status status-' + (status === 'available' ? 'available' : status) + '"><span class="dot"></span>' + esc(status || 'available') + '</span>';
+        }
+
+        function row(item) {
+            var isFound = !!item.finder_name;
+            var collection = isFound ? FOUND : LOST;
+            var thumb = item.image_url ? '<img src="' + esc(item.image_url) + '" alt="' + esc(item.item_name || 'item') + '">' : '<span data-icon="image"></span>';
+            var detail = 'item.html?id=' + item.item_id + '&collection=' + collection;
+            return '' +
+                '<div class="list-item rise">' +
+                    '<div class="list-item-thumb">' + thumb + '</div>' +
+                    '<div class="list-item-main">' +
+                        '<div class="list-item-title">' + esc(item.item_name || 'Unnamed item') + '</div>' +
+                        '<div class="list-item-sub">' +
+                            (isFound ? 'Found item' : 'Lost item') +
+                            ' · ' + esc(item.category || 'Other') +
+                            ' · ' + esc(item.upload_time || '') +
+                            (item.matched_with_name ? ' · matched with ' + esc(item.matched_with_name) : '') +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="actions">' + statusEl(item.status) +
+                        '<a class="btn btn-sm btn-secondary" href="' + detail + '">Details</a>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        function show(message, cls) {
+            stateEl.innerHTML = '<div class="alert ' + cls + '" style="display:flex;"><span data-icon="info"></span><div>' + message + '</div></div>';
+        }
+
+        async function lookup(email) {
+            lookupBtn.disabled = true;
+            lookupBtn.innerHTML = '<span class="spinner"></span> Loading…';
+            resultsEl.style.display = 'none';
+            stateEl.style.display = '';
+
+            try {
+                var res = await fetch('/api/get-items-by-email', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                if (!res.ok) { var err = await res.json(); throw new Error(err.detail || 'Lookup failed.'); }
+                var items = await res.json();
+
+                if (!items.length) {
+                    show('No items were found under <b>' + email + '</b>. Make sure you used this exact email when reporting.', 'alert-empty');
+                    return;
+                }
+
+                stateEl.style.display = 'none';
+                resultsEl.style.display = 'block';
+                usedEmail.textContent = email;
+                listEl.innerHTML = items.map(row).join('');
+            } catch (err) {
+                show('Something went wrong: ' + err.message, 'alert-danger');
+            } finally {
+                lookupBtn.disabled = false;
+                lookupBtn.innerHTML = '<span data-icon="search"></span> Look up my items';
+            }
+        }
+
+        function submit() {
+            var email = emailInput.value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { show('Please enter a valid email address.', 'alert-danger'); return; }
+            try { localStorage.setItem('lf_email', email); } catch (e) {}
+            lookup(email);
+        }
+
+        lookupBtn.addEventListener('click', submit);
+        emailInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knit — knit things back together</title>
+    <meta name="description" content="Report a lost or found item with a single photo. Knit's AI matching engine reunites owners with what belongs to them.">
+    <link rel="icon" type="image/x-icon" href="/webcon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <!-- ===== Floating Navbar ===== -->
+    <div class="nav-wrapper">
+        <nav class="nav">
+            <div class="nav-inner">
+                <a href="/" class="nav-brand">
+                    <span class="mark" data-brand></span>
+                    <span>Knit</span>
+                </a>
+
+                <button class="icon-btn nav-toggle" id="navToggle" aria-label="Toggle menu">
+                    <span data-icon="menu"></span>
+                </button>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link active">Home</a></li>
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="report-found.html" class="nav-link">I Found an Item</a></li>
+                    <li><a href="report-lost.html" class="nav-link">I Lost an Item</a></li>
+                    <li><a href="my-items.html" class="nav-link">My Items</a></li>
+                </ul>
+
+                <div class="nav-right">
+                    <a href="report-found.html" class="btn btn-primary nav-cta">Report an item</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ===== Hero ===== -->
+    <header class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+
+        <div class="hero-inner">
+
+            <div class="hero-copy">
+
+                <h1>
+                    Everything finds its <span class="highlight">way back home.</span>
+                </h1>
+
+                <p class="lead">
+                    Found something? Lost something? Upload a single photo. Knit reads the
+                    image and description, cross-matches every report, and puts owners and
+                    finders back in touch—automatically.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="report-found.html" class="btn btn-lg btn-primary">
+                        <span data-icon="box"></span> I found an item
+                    </a>
+                    <a href="report-lost.html" class="btn btn-lg btn-secondary">
+                        <span data-icon="search"></span> I lost an item
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-art" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 350" width="100%" height="100%">
+                    <style>
+                        .search-beam {
+                            animation: sweep 4s ease-in-out infinite alternate;
+                            transform-origin: 100px 130px;
+                            transform-box: view-box;
+                        }
+                        .found-key {
+                            animation: hoverKey 2.5s ease-in-out infinite alternate;
+                            transform-origin: 250px 190px;
+                            transform-box: view-box;
+                        }
+                        .glow-aura {
+                            animation: pulseGlow 2.5s ease-in-out infinite alternate;
+                            transform-origin: center;
+                            transform-box: fill-box;
+                        }
+                        @keyframes sweep {
+                            0%   { transform: rotate(-5deg); opacity: 0.4; }
+                            100% { transform: rotate(12deg); opacity: 0.95; }
+                        }
+                        @keyframes hoverKey {
+                            0%   { transform: translateY(0px) rotate(0deg); }
+                            100% { transform: translateY(-12px) rotate(3deg); }
+                        }
+                        @keyframes pulseGlow {
+                            0%   { opacity: 0.2; transform: scale(0.9); }
+                            100% { opacity: 0.6; transform: scale(1.1); }
+                        }
+                    </style>
+
+                    <g stroke="#334155" stroke-width="1" opacity="0.6">
+                        <path d="M 0,175 L 350,350 M 0,100 L 350,275 M 0,250 L 200,350 M 0,25 L 350,200" />
+                        <path d="M 350,175 L 0,350 M 350,100 L 0,275 M 350,250 L 150,350 M 350,25 L 0,200" />
+                    </g>
+
+                    <g transform="translate(40, 60)">
+                        <polygon points="40,140 80,120 120,140 80,160" fill="#334155" />
+                        <polygon points="50,135 70,60 90,60 110,135" fill="#475569" />
+                        <polygon points="70,60 80,55 90,60 80,135" fill="#64748b" />
+                        <polygon points="70,55 73,40 87,40 90,55" fill="#94a3b8" />
+                        <circle cx="80" cy="47" r="5" fill="#fef08a" />
+                    </g>
+
+                    <g class="search-beam">
+                        <polygon points="120,107 280,160 310,230 120,111" fill="url(#beamGradient)" style="mix-blend-mode: screen;" />
+                    </g>
+
+                    <g class="found-key">
+                        <ellipse class="glow-aura" cx="245" cy="195" rx="35" ry="20" fill="url(#keyGlow)" />
+                        <circle cx="225" cy="185" r="10" fill="none" stroke="#fbbf24" stroke-width="4" />
+                        <line x1="234" y1="189" x2="265" y2="205" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" />
+                        <polygon points="255,200 260,202 260,212 255,210" fill="#fbbf24" />
+                        <polygon points="261,203 266,205 266,215 261,213" fill="#fbbf24" />
+                        <path d="M 220,165 L 222,170 L 227,172 L 222,174 L 220,179 L 218,174 L 213,172 L 218,170 Z" fill="#fff" opacity="0.9" />
+                        <path d="M 270,185 L 271,188 L 275,189 L 271,190 L 270,193 L 269,190 L 265,189 L 269,188 Z" fill="#fef08a" opacity="0.8" />
+                    </g>
+
+                    <defs>
+                        <linearGradient id="beamGradient" x1="0%" y1="30%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#eab308" stop-opacity="0.5" />
+                            <stop offset="60%" stop-color="#eab308" stop-opacity="0.15" />
+                            <stop offset="100%" stop-color="#eab308" stop-opacity="0" />
+                        </linearGradient>
+                        <radialGradient id="keyGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.6" />
+                            <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Curved bottom edge -->
+        <div class="hero-curve-wrap" aria-hidden="true">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,120 C360,20 1080,20 1440,120 L1440,120 L0,120 Z" fill="#030303"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- ===== Fresh Finds ===== -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="kicker">Fresh finds</span>
+                <h2>Someone found these. One might be yours.</h2>
+                <p>Each item is automatically scanned against every lost report. If you spot yours, claim it in one click.</p>
+            </div>
+            <div id="found-grid" class="grid grid-4 reveal"></div>
+            <div id="found-empty" class="muted text-center mt-6" hidden>
+                No found items have been reported yet — be the first.
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Platform Features ===== -->
+    <section class="section" id="features">
+        <div class="container">
+            <div class="section-head center reveal">
+                <span class="kicker">Platform</span>
+                <h2>Built to close the loop</h2>
+                <p>Four things done carefully — nothing more, nothing less.</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card reveal-soft">
+                    <div class="feature-icon">
+                        <span data-icon="image" class="icon"></span>
+                    </div>
+                    <h3>Multi-modal matching</h3>
+                    <p>Each report is read twice — the photo and the written description. Both signals are fused into a single confidence score, so a match survives a bad photo or a vague description.</p>
+                </div>
+
+                <div class="feature-card reveal-soft">
+                    <div class="feature-icon">
+                        <span data-icon="database" class="icon"></span>
+                    </div>
+                    <h3>Vector search</h3>
+                    <p>A purpose-built vector index keeps lookups fast and accurate, even as the number of reports grows into the thousands. Powered by Qdrant and CLIP.</p>
+                </div>
+
+                <div class="feature-card reveal-soft">
+                    <div class="feature-icon">
+                        <span data-icon="bell" class="icon"></span>
+                    </div>
+                    <h3>Instant claim alerts</h3>
+                    <p>When a claim is confirmed, both parties receive each other's contact details by email — automatically. No middleman, no waiting.</p>
+                </div>
+
+                <div class="feature-card reveal-soft">
+                    <div class="feature-icon">
+                        <span data-icon="shield" class="icon"></span>
+                    </div>
+                    <h3>Private by design</h3>
+                    <p>Contact information is only revealed after a verified match. Everyone's details stay safe until a genuine connection is made.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Still Searching ===== -->
+    <section class="section">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="kicker">Still searching</span>
+                <h2>Have you seen any of these?</h2>
+                <p>Someone is looking for these. Your sharp eye could bring one home.</p>
+            </div>
+            <div id="lost-grid" class="grid grid-4 reveal"></div>
+            <div id="lost-empty" class="muted text-center mt-6" hidden>
+                No lost items reported yet.
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== How It Works ===== -->
+    <section class="section">
+        <div class="container-narrow">
+            <div class="section-head reveal">
+                <span class="kicker">How it works</span>
+                <h2>From report to reunion</h2>
+            </div>
+            <div class="steps">
+                <div class="step reveal">
+                    <div class="step-num">1</div>
+                    <div>
+                        <h3>Report an item</h3>
+                        <p class="mb-0">Add a photo, category, location and contact info — whether you found it or lost it.</p>
+                    </div>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num">2</div>
+                    <div>
+                        <h3>AI reads image &amp; description</h3>
+                        <p class="mb-0">The model encodes the item twice — visually and textually — into two compact signatures.</p>
+                    </div>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num">3</div>
+                    <div>
+                        <h3>Find potential matches</h3>
+                        <p class="mb-0">Similar items are surfaced, ranked by a combined confidence score, and annotated with why they match.</p>
+                    </div>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num">4</div>
+                    <div>
+                        <h3>Review and claim</h3>
+                        <p class="mb-0">Confirm the match that's yours and claim it in one click.</p>
+                    </div>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num">5</div>
+                    <div>
+                        <h3>Coordinate the return</h3>
+                        <p class="mb-0">Both people are emailed each other's details to arrange a safe handover.</p>
+                    </div>
+                </div>
+                <div class="step reveal">
+                    <div class="step-num">6</div>
+                    <div>
+                        <h3>Mark as returned</h3>
+                        <p class="mb-0">Once it's back home, close the loop by marking the item as returned.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer reveal" id="about">
+        <div class="container">
+            <div class="footer-inner">
+                <div>
+                    <div class="footer-brand">
+                        <span class="mark" data-brand></span>
+                        <span>Knit</span>
+                    </div>
+                    <p class="footer-desc">
+                        AI-powered matching that reconnects people with the things they've lost.
+                        FastAPI, CLIP and Qdrant under the hood — private by design.
+                    </p>
+                </div>
+                <div>
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="report-found.html">Report found item</a></li>
+                        <li><a href="report-lost.html">Report lost item</a></li>
+                        <li><a href="my-items.html">My items</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="mb-0">© <span id="year"></span> Knit. Made with care.</p>
+                <div class="social">
+                    <a href="#" aria-label="GitHub"><span data-icon="github" class="icon"></span></a>
+                    <a href="#" aria-label="Twitter"><span data-icon="twitter" class="icon"></span></a>
+                    <a href="#" aria-label="LinkedIn"><span data-icon="facebook" class="icon"></span></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        var FOUND = 'found_items_collection';
+        var LOST  = 'lost_items_collection';
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+            });
+        }
+
+        function statusEl(status) {
+            return '<span class="status status-' + (status === 'available' ? 'available' : status) + '"><span class="dot"></span>' + esc(status || 'available') + '</span>';
+        }
+
+        function thumb(item) {
+            return item.image_url
+                ? '<img src="' + esc(item.image_url) + '" alt="' + esc(item.item_name || 'item') + '">'
+                : '<span class="ph" data-icon="image"></span>';
+        }
+
+        function card(item, collection, featured) {
+            var isLost     = collection === LOST;
+            var actionable = item.status === 'available';
+            var detail     = 'item.html?id=' + item.item_id + '&collection=' + collection;
+            var action     = actionable
+                ? '<a class="btn btn-sm btn-primary" href="matches.html" data-find="' + item.item_id + '" data-collection="' + collection + '">Find matches</a>'
+                : '<a class="btn btn-sm btn-secondary" href="' + detail + '">View details</a>';
+
+            if (featured) {
+                return '<article class="card item-card item-featured rise">' +
+                    '<a class="item-thumb" href="' + esc(detail) + '" tabindex="-1" aria-hidden="true">' + thumb(item) + '</a>' +
+                    '<div class="item-body">' +
+                        '<div class="item-sub"><span class="tag">' + esc(item.category || 'Other') + '</span>' + statusEl(item.status) + '</div>' +
+                        '<h3 class="item-title item-featured-title"><a href="' + esc(detail) + '">' + esc(item.item_name || 'Unnamed item') + '</a></h3>' +
+                        '<p class="muted mb-0" style="font-size:0.88rem;">' + esc(isLost ? 'Lost item' : 'Found item') + ' &middot; ' + esc(item.upload_time || '') + '</p>' +
+                        '<div class="item-foot">' + action + '</div>' +
+                    '</div>' +
+                '</article>';
+            }
+
+            return '<article class="card item-card rise">' +
+                '<a class="item-thumb" href="' + esc(detail) + '" tabindex="-1" aria-hidden="true">' + thumb(item) + '</a>' +
+                '<div class="item-body">' +
+                    '<div class="item-sub"><span class="tag">' + esc(item.category || 'Other') + '</span>' + statusEl(item.status) + '</div>' +
+                    '<h3 class="item-title"><a href="' + esc(detail) + '">' + esc(item.item_name || 'Unnamed item') + '</a></h3>' +
+                    '<span class="item-sub">' + esc(item.upload_time || '') + '</span>' +
+                    '<div class="item-foot">' + action + '</div>' +
+                '</div>' +
+            '</article>';
+        }
+
+        function renderGrid(gridId, emptyId, endpoint, collection) {
+            fetch(endpoint)
+                .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+                .then(function(items) {
+                    var grid = document.getElementById(gridId);
+                    grid.style.display = '';
+                    document.getElementById(emptyId).hidden = true;
+                    if (!items || items.length === 0) {
+                        grid.style.display = 'none';
+                        document.getElementById(emptyId).hidden = false;
+                        return;
+                    }
+                    grid.innerHTML = items.map(function(it, i) { return card(it, collection, i === 0); }).join('');
+                })
+                .catch(function() {
+                    var grid = document.getElementById(gridId);
+                    grid.style.display = 'none';
+                    var el = document.getElementById(emptyId);
+                    el.hidden = false;
+                    el.className = 'empty-state';
+                    el.innerHTML =
+                        '<div class="empty-state-icon">' + window.icon('inbox') + '</div>' +
+                        '<h3>Nothing here yet</h3>' +
+                        '<p>No items have been reported so far. Check back soon &mdash; or be the first to report one.</p>' +
+                        '<button type="button" class="btn btn-primary btn-sm mt-4" data-retry="' + endpoint + '">Try again</button>';
+                });
+        }
+
+        document.addEventListener('click', function(e) {
+            var retry = e.target.closest('[data-retry]');
+            if (retry) {
+                var pair = retry.getAttribute('data-retry') === '/api/get-found-items'
+                    ? ['found-grid', 'found-empty'] : ['lost-grid', 'lost-empty'];
+                renderGrid(pair[0], pair[1], retry.getAttribute('data-retry'),
+                    retry.getAttribute('data-retry') === '/api/get-found-items' ? FOUND : LOST);
+                return;
+            }
+            var el = e.target.closest('[data-find]');
+            if (!el) return;
+            e.preventDefault();
+            fetch('/api/get-potential-matches', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_id: el.dataset.find, collection_name: el.dataset.collection })
+            }).then(function(r) {
+                if (!r.ok) throw new Error();
+                return r.json();
+            }).then(function(result) {
+                sessionStorage.setItem('reportDetails', JSON.stringify(result));
+                window.location.href = 'matches.html';
+            }).catch(function() {
+                alert('Could not load matches. Please try again.');
+            });
+        });
+
+        renderGrid('found-grid', 'found-empty', '/api/get-found-items', FOUND);
+        renderGrid('lost-grid',  'lost-empty',  '/api/get-lost-items',  LOST);
+    </script>
+</body>
+</html>
